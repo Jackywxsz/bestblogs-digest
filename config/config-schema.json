@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "bestblogs-daily config",
+  "type": "object",
+  "properties": {
+    "language": {
+      "type": "string",
+      "enum": ["en", "zh", "bilingual"],
+      "default": "bilingual",
+      "description": "Digest language: bilingual (EN+ZH interleaved), zh (Chinese only), en (English only)"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": ["daily", "weekly"],
+      "default": "daily"
+    },
+    "deliveryTime": {
+      "type": "string",
+      "pattern": "^[0-2][0-9]:[0-5][0-9]$",
+      "default": "08:00",
+      "description": "Local delivery time in HH:MM format"
+    },
+    "timezone": {
+      "type": "string",
+      "default": "Asia/Shanghai",
+      "description": "IANA timezone string, e.g. Asia/Shanghai, America/New_York"
+    },
+    "weeklyDay": {
+      "type": "string",
+      "enum": ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"],
+      "default": "monday",
+      "description": "Day of week for weekly digest (only used when frequency=weekly)"
+    },
+    "maxArticles": {
+      "type": "integer",
+      "default": 15,
+      "minimum": 5,
+      "maximum": 30,
+      "description": "Maximum number of articles per digest"
+    },
+    "onboardingComplete": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": ["language", "frequency", "deliveryTime", "timezone", "maxArticles", "onboardingComplete"]
+}

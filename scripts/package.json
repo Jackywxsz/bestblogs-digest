@@ -1,0 +1,13 @@
+{
+  "name": "bestblogs-daily-scripts",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Scripts for bestblogs-daily skill",
+  "scripts": {
+    "fetch": "node fetch-rss.js",
+    "digest": "node prepare-digest.js"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.3.0"
+  }
+}
