@@ -1,20 +1,10 @@
 # bestblogs-digest
 
-**每日 AI 精选日报 · 中英双语 · OpenClaw Skill**
+**每日 AI 精选日报 · 卡片式推送 · OpenClaw Skill**
 
-A daily bilingual AI digest from [BestBlogs.dev](https://www.bestblogs.dev), delivered as an OpenClaw skill.
+每天从 [BestBlogs.dev](https://www.bestblogs.dev) 筛选 AI 评分 ≥ 90 的高质量文章，以精致的卡片式日报推送。
 
----
-
-## 这是什么 / What Is This
-
-`bestblogs-digest` 每天从 BestBlogs.dev 抓取 AI 评分 ≥ 90 分的高质量 AI 文章，按主题聚类，加上编辑点评，生成双语（中英）日报。
-
-`bestblogs-digest` fetches the highest-quality AI articles (score ≥ 90) from BestBlogs.dev daily, groups them into thematic clusters with editorial commentary, and delivers a bilingual (English + Chinese) digest.
-
-**BestBlogs.dev** 已用 AI 对每篇文章做了摘要和评分 — 本 skill 的工作是进一步策展，而非重新摘要。
-
-BestBlogs.dev already summarizes and scores every article with AI — this skill curates, not re-summarizes.
+BestBlogs.dev 已用 AI 对每篇文章做了摘要和评分——本 skill 不重复摘要，而是做策展：挑选、排序、点评，让你 5 分钟看懂今天 AI 世界发生了什么。
 
 ---
 
@@ -43,9 +33,7 @@ cd ~/skills/bestblogs-digest/scripts && npm install
 | `/bestblogs setup` | 重新运行配置向导 |
 | `/bestblogs config` | 查看当前配置 |
 
-首次运行会自动进入配置向导（选择语言、推送频率、时间等），完成后立即推送第一份日报。
-
-On first run, an onboarding wizard guides you through setup (language, frequency, time). A welcome digest is delivered immediately after.
+首次运行会自动进入配置向导（推送频率、时间等），完成后立即推送第一份日报。
 
 ---
 
@@ -73,7 +61,6 @@ After updating, your existing config at `~/.bestblogs-digest/config.json` is pre
 
 | 字段 | 默认值 | 说明 |
 |------|--------|------|
-| `language` | `"bilingual"` | `"bilingual"` 中英对照 / `"zh"` 仅中文 / `"en"` 仅英文 |
 | `frequency` | `"daily"` | `"daily"` 每天 / `"weekly"` 每周 |
 | `deliveryTime` | `"08:00"` | 本地时间，HH:MM 格式 |
 | `timezone` | `"Asia/Shanghai"` | IANA 时区 |
@@ -81,7 +68,7 @@ After updating, your existing config at `~/.bestblogs-digest/config.json` is pre
 
 ---
 
-## 自定义 Prompt / Custom Prompts
+## 自定义 Prompt
 
 将 `prompts/` 目录复制到 `~/.bestblogs-digest/prompts/` 并修改即可覆盖默认 prompt：
 
@@ -110,8 +97,8 @@ node scripts/fetch-rss.js --lang both
      ↓ (parallel fetch EN + ZH RSS, merge by GUID)
 node scripts/prepare-digest.js
      ↓ (dedup, time-filter, sort by score, load prompts)
-LLM (Claude) generates editorial digest
-     ↓ (thematic clustering + bilingual interleaving)
+LLM (Claude) generates card-style digest
+     ↓ (editorial curation + Chinese output)
 OpenClaw delivers to channel
      ↓
 Update ~/.bestblogs-digest/state.json (dedup state)

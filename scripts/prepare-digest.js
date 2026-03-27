@@ -35,12 +35,12 @@ function loadState() {
 // --- Load config ---
 function loadConfig() {
   if (!existsSync(CONFIG_FILE)) {
-    return { language: 'bilingual', frequency: 'daily', maxArticles: 15 };
+    return { frequency: 'daily', maxArticles: 15 };
   }
   try {
     return JSON.parse(readFileSync(CONFIG_FILE, 'utf8'));
   } catch {
-    return { language: 'bilingual', frequency: 'daily', maxArticles: 15 };
+    return { frequency: 'daily', maxArticles: 15 };
   }
 }
 
@@ -124,17 +124,13 @@ async function main() {
   const selected = newArticles.slice(0, maxArticles);
 
   // Load prompts
-  const [curatePrompt, bilingualPrompt] = await Promise.all([
-    loadPrompt('digest-curate.md'),
-    loadPrompt('translate-bilingual.md'),
-  ]);
+  const curatePrompt = await loadPrompt('digest-curate.md');
 
   const now = new Date().toISOString();
   const blob = {
     meta: {
       generatedAt: now,
       articleCount: selected.length,
-      language: config.language || 'bilingual',
       frequency: config.frequency || 'daily',
       dateRange: {
         from: windowStart.toISOString().split('T')[0],
@@ -143,7 +139,6 @@ async function main() {
     },
     prompts: {
       curate: curatePrompt,
-      bilingual: bilingualPrompt,
     },
     articles: selected,
   };

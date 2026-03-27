@@ -146,6 +146,7 @@ function mergeArticles(enArticles, zhArticles) {
     return {
       guid: enArt.guid,
       title: enArt.title,
+      zhTitle: zhArt.title,
       link: enArt.link,
       pubDate: enArt.pubDate,
       author: enArt.author,

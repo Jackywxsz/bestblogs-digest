@@ -3,12 +3,6 @@
   "title": "bestblogs-digest config",
   "type": "object",
   "properties": {
-    "language": {
-      "type": "string",
-      "enum": ["en", "zh", "bilingual"],
-      "default": "bilingual",
-      "description": "Digest language: bilingual (EN+ZH interleaved), zh (Chinese only), en (English only)"
-    },
     "frequency": {
       "type": "string",
       "enum": ["daily", "weekly"],
@@ -43,5 +37,5 @@
       "default": false
     }
   },
-  "required": ["language", "frequency", "deliveryTime", "timezone", "maxArticles", "onboardingComplete"]
+  "required": ["frequency", "deliveryTime", "timezone", "maxArticles", "onboardingComplete"]
 }
