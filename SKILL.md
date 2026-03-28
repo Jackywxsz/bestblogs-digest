@@ -61,12 +61,20 @@ Ask:
 Save as `maxArticles`. Default: `15`. Min: `5`. Max: `30`.
 
 ### Step 5 — Set up cron
-Set up OpenClaw cron for automatic delivery.
+Set up an OpenClaw cron job for automatic delivery. The job **must** be an isolated-session, announce-mode job so it actually sends messages — not a reminder.
 
-Convert the delivery time + timezone to a UTC cron expression. Avoid :00 and :30 minute marks (nudge ±2 min).
+**Critical parameters:**
+- `--session isolated` — run in a fresh isolated session (not main session)
+- `--announce` — deliver the output as a message to the channel
+- `--tz {timezone}` — use the user's timezone (e.g. `Asia/Shanghai`)
+- `--channel feishu` (or the user's configured channel)
+- Write the cron expression in **local time** (not UTC). Do NOT convert to UTC when `--tz` is specified.
 
-Example: `08:00 Asia/Shanghai` → `UTC 00:02` → cron `"2 0 * * *"` for daily.
-For weekly Monday 08:00 CST → `"2 0 * * 1"`.
+Avoid :00 and :30 minute marks (nudge ±2 min).
+
+Examples:
+- Daily at 08:00 Asia/Shanghai → `--tz Asia/Shanghai` + cron `"2 8 * * *"`
+- Weekly Monday 08:00 Asia/Shanghai → `--tz Asia/Shanghai` + cron `"2 8 * * 1"`
 
 Inform the user:
 > 已设置定时任务：每天 {deliveryTime}（{timezone}）自动推送。
