@@ -4,12 +4,12 @@
  * Fetches BestBlogs.dev AI RSS feeds (English + Chinese), parses them,
  * merges by GUID, and outputs structured JSON to stdout.
  *
- * Usage: node fetch-rss.js [--lang en|zh|both]
+ * Usage: node fetch-rss.js [--lang en|zh|both] [--minScore 80]
  */
 
 import { XMLParser } from 'fast-xml-parser';
 
-const RSS_BASE = 'https://www.bestblogs.dev/{lang}/feeds/rss?category=ai&minScore=90';
+const RSS_BASE = 'https://www.bestblogs.dev/{lang}/feeds/rss?category=ai&minScore={minScore}';
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 2000;
 
@@ -17,10 +17,12 @@ const RETRY_DELAY_MS = 2000;
 const args = process.argv.slice(2);
 const langIndex = args.indexOf('--lang');
 const lang = langIndex >= 0 ? args[langIndex + 1] : 'both';
+const scoreIndex = args.indexOf('--minScore');
+const minScore = scoreIndex >= 0 ? (parseInt(args[scoreIndex + 1], 10) || 80) : 80;
 
 // --- RSS fetch with retry ---
 async function fetchRSS(language) {
-  const url = RSS_BASE.replace('{lang}', language);
+  const url = RSS_BASE.replace('{lang}', language).replace('{minScore}', String(minScore));
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
       const res = await fetch(url, {

@@ -96,6 +96,7 @@ async function main() {
 
   const state = loadState();
   const config = loadConfig();
+  const minScore = config.minScore || 80;
 
   // Prune old entries
   state.seenGuids = pruneState(state.seenGuids);
@@ -106,12 +107,32 @@ async function main() {
     ? new Date(state.lastRun)
     : new Date(Date.now() - windowHours * 60 * 60 * 1000);
 
-  // Filter: not seen + within time window
-  const newArticles = articles.filter(article => {
+  // --- 3-level fallback filter to ensure content even after dedup ---
+
+  // Level 1 (standard): not seen + within time window
+  let newArticles = articles.filter(article => {
     if (state.seenGuids[article.guid]) return false;
     if (!article.pubDate) return true;
     return new Date(article.pubDate) >= windowStart;
   });
+
+  let resend = false;
+
+  // Level 2: drop time window constraint, keep dedup only
+  // (handles articles older than lastRun but never actually seen)
+  if (newArticles.length === 0 && articles.length > 0) {
+    newArticles = articles.filter(article => !state.seenGuids[article.guid]);
+  }
+
+  // Level 3: all articles are already seen — resend best from last 48h
+  if (newArticles.length === 0 && articles.length > 0) {
+    const extendedStart = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    newArticles = articles.filter(article => {
+      if (!article.pubDate) return true;
+      return new Date(article.pubDate) >= extendedStart;
+    });
+    if (newArticles.length > 0) resend = true;
+  }
 
   // Sort by score desc, then pubDate desc
   newArticles.sort((a, b) => {
@@ -132,6 +153,8 @@ async function main() {
       generatedAt: now,
       articleCount: selected.length,
       frequency: config.frequency || 'daily',
+      minScore,
+      resend,
       dateRange: {
         from: windowStart.toISOString().split('T')[0],
         to: now.split('T')[0],

@@ -32,6 +32,13 @@
       "maximum": 30,
       "description": "Maximum number of articles per digest"
     },
+    "minScore": {
+      "type": "integer",
+      "default": 80,
+      "minimum": 60,
+      "maximum": 95,
+      "description": "Minimum BestBlogs AI score for articles to be fetched (60-95). Lower = more articles; LLM curation still selects the best."
+    },
     "onboardingComplete": {
       "type": "boolean",
       "default": false

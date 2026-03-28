@@ -2,7 +2,7 @@
 
 **每日 AI 精选日报 · 卡片式推送 · OpenClaw Skill**
 
-每天从 [BestBlogs.dev](https://www.bestblogs.dev) 筛选 AI 评分 ≥ 90 的高质量文章，以精致的卡片式日报推送。
+每天从 [BestBlogs.dev](https://www.bestblogs.dev) 筛选 AI 评分 ≥ 80（可配置）的高质量文章，以精致的卡片式日报推送。
 
 BestBlogs.dev 已用 AI 对每篇文章做了摘要和评分——本 skill 不重复摘要，而是做策展：挑选、排序、点评，让你 5 分钟看懂今天 AI 世界发生了什么。
 
@@ -65,6 +65,7 @@ After updating, your existing config at `~/.bestblogs-digest/config.json` is pre
 | `deliveryTime` | `"08:00"` | 本地时间，HH:MM 格式 |
 | `timezone` | `"Asia/Shanghai"` | IANA 时区 |
 | `maxArticles` | `15` | 每期最多文章数（5–30）|
+| `minScore` | `80` | 文章最低 AI 评分（60–95），越低文章越多，LLM 策展仍会优先挑高分 |
 
 ---
 
@@ -81,8 +82,8 @@ cp -r ~/skills/bestblogs-digest/prompts ~/.bestblogs-digest/prompts
 ## 数据来源 / Data Source
 
 - 内容来源：[BestBlogs.dev](https://www.bestblogs.dev)（[ginobefun/bestblogs](https://github.com/ginobefun/bestblogs)）
-- RSS 端点：`https://www.bestblogs.dev/en/feeds/rss?category=ai&minScore=90`
-- 评分说明：BestBlogs 用 GPT-4o 对每篇文章打分（0–100），本 skill 只取 90 分以上的内容
+- RSS 端点：`https://www.bestblogs.dev/en/feeds/rss?category=ai&minScore={minScore}`（minScore 默认 80，可配置）
+- 评分说明：BestBlogs 用 GPT-4o 对每篇文章打分（0–100），默认取 80 分以上；LLM 策展时优先展示 90+ 精选
 
 ---
 
@@ -93,7 +94,7 @@ OpenClaw cron
      ↓
 SKILL.md (skill brain)
      ↓
-node scripts/fetch-rss.js --lang both
+node scripts/fetch-rss.js --lang both --minScore 80
      ↓ (parallel fetch EN + ZH RSS, merge by GUID)
 node scripts/prepare-digest.js
      ↓ (dedup, time-filter, sort by score, load prompts)

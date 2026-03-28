@@ -60,6 +60,15 @@ Ask:
 
 Save as `maxArticles`. Default: `15`. Min: `5`. Max: `30`.
 
+### Step 4b — Minimum article score
+Ask:
+> 文章最低评分门槛？BestBlogs 用 AI 对每篇文章打 0–100 分。
+> 1. 90 分：只看最顶尖内容（文章少，某些天可能没有）
+> 2. 80 分：推荐默认（质量高，每天都有内容）
+> 3. 70 分：更广覆盖面
+
+Save as `minScore`. Default: `80`. Min: `60`. Max: `95`.
+
 ### Step 5 — Set up cron
 Set up an OpenClaw cron job for automatic delivery. The job **must** be an isolated-session, announce-mode job so it actually sends messages — not a reminder.
 
@@ -99,7 +108,7 @@ If config missing or `onboardingComplete` is false, run onboarding first.
 ### 2. Fetch & prepare
 Run the pipeline from the skill directory:
 ```bash
-cd {skill_directory}/scripts && node fetch-rss.js --lang both | node prepare-digest.js
+cd {skill_directory}/scripts && node fetch-rss.js --lang both --minScore {config.minScore or 80} | node prepare-digest.js
 ```
 This outputs a JSON blob with: articles (deduped, time-filtered, sorted by score) and prompts.
 
@@ -108,6 +117,9 @@ If `blob.meta.articleCount === 0`:
 > 今天暂无新的高分 AI 文章（距上次推送未发现新内容）。明天见！
 
 Stop here. Do NOT update state.json.
+
+If `blob.meta.resend === true`: Add this note at the top of the digest (before the header):
+> 💡 今天没有全新文章入选，以下是近两天最值得回顾的精选内容。
 
 ### 4. Generate the digest
 Read the blob. Follow `blob.prompts.curate` instructions to generate the digest.
@@ -154,6 +166,8 @@ Users can update config by saying things like:
 - "改成每周推送" → update `frequency` to `"weekly"`, update cron
 - "最多推20篇" → update `maxArticles` to `20`
 - "改成晚上9点推" → update `deliveryTime`, update cron
+- "评分门槛改成90" → update `minScore` to `90`
+- "放宽门槛到70" → update `minScore` to `70`
 
 After any change: confirm and show updated settings.
 
@@ -170,6 +184,7 @@ Location: `~/.bestblogs-digest/config.json`
   "timezone": "Asia/Shanghai",
   "weeklyDay": "monday",
   "maxArticles": 15,
+  "minScore": 80,
   "onboardingComplete": true
 }
 ```
@@ -213,4 +228,5 @@ When user says `/bestblogs config`, display:
 > - 频率：{frequency}
 > - 推送时间：{deliveryTime}（{timezone}）
 > - 每期最多文章数：{maxArticles}
+> - 最低评分门槛：{minScore}
 > - 上次推送：{lastRun from state.json, "从未" if null}
